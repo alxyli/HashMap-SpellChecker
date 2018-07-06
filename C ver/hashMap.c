@@ -1,6 +1,4 @@
 /*
- * CS 261 Data Structures
- * Assignment 6
  * Name: Alex Li
  * Date: 3/8/17
  */

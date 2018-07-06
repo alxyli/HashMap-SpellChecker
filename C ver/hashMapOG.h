@@ -2,8 +2,8 @@
 #define HASH_MAP_H
 
 /*
- * CS 261 Data Structures
- * Assignment 6
+ * Name: Alex Li
+ * Date: 3/8/17
  */
 
 #define HASH_FUNCTION hashFunction1

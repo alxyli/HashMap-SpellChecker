@@ -1,6 +1,4 @@
 /*
- * CS 261 Data Structures
- * Assignment 6
  * Name: Alex Li
  * Date: 3/8/17
  */
@@ -57,7 +55,7 @@ char* nextWord(FILE* file)
  * calculates the Levenshtein edit distance between two words
  * uses a modified version of the code from this example:
  * https://www.lemoda.net/c/levenshtein/
- * and algorithm logic inspired from this resource:
+ * and algorithm logic based on this resource:
  * http://people.cs.pitt.edu/~kirk/cs1501/Pruhs/Spring2006/assignments/editdistance/Levenshtein%20Distance.htm
  * @param first word
  * @param second word
@@ -147,7 +145,6 @@ void loadDictionary(FILE* file, HashMap* map)
  */
 int main(int argc, const char** argv)
 {
-    // FIXME: implement
     HashMap* map = hashMapNew(1000);
     
     FILE* file = fopen("dictionary.txt", "r");
@@ -168,10 +165,9 @@ int main(int argc, const char** argv)
         if (strcmp(inputBuffer, "quit") == 0)
         {
             quit = 1;
-        }
+        }   
 
-        // Implement the spell checker code here..
-
+        // spell checker logic
         // if the map contains the inputBuffer key, input is spelled correctly
         else if (hashMapContainsKey(map, inputBuffer))
             printf("%s is spelled correctly.\n\n", inputBuffer);
@@ -184,10 +180,10 @@ int main(int argc, const char** argv)
 
                 while (temp)
                 {
-                    // calculate levenshtein distance between misspelled word and every word in dictionary
+                    // calculate edit distance between misspelled word and every word in dictionary
                     int levenshtein = calcLD(inputBuffer, temp->key);
 
-                    /* print suggestions that fall within given constraints (filters):
+                    /* result filters:
                      * levenshtein distance between words is 1 or 2
                      * the length of the suggestion is at least the length of the misspelled word
                      * the first letter of the misspelled word is correct
