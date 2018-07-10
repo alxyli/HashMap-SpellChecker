@@ -185,6 +185,12 @@ public:
 	int mapCapacity() const { return mCapacity; } 
 
 	/*
+	 * Returns a pointer to the bucket in the table specified by the index
+	 * @returns HashLink pointer to specified bucket index
+	 */
+	HashLink<K, V>* mapTableLink(int index) const { return mTable[index]; }
+
+	/*
 	 * Returns the number of table buckets without any links
 	 * @return numbeer of empty buckets
 	 */
