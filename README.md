@@ -15,7 +15,9 @@ g++ compiler
 ### Installing
 
 ```
-....
+'make all' to compile
+'./spellChecker' to run
+'make clean' to remove executable
 ```
 ## Authors
 
