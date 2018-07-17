@@ -14,6 +14,7 @@ using std::cin;
 // prototypes
 int loadDictionary(string fname, HashMap<string, int> *map);
 int calcLD(string word1, string word2);
+void spellChecker(HashMap<string, int> *dictionary);
 
 int main() {
 	double start, end, elapsed;
@@ -35,50 +36,23 @@ int main() {
 	}
 
 	cout << "Dictionary loaded in " << elapsed << " seconds." << endl;
+	cout << "Dictionary contains " << dictionary->mapSize() << " entries hashed into " << dictionary->mapCapacity() << " buckets." << endl;
+	cout << "Table load: " << dictionary->mapTableLoad() << endl;
 
-	string inputbuffer = "";
-	bool quit = false;
-
-	while (!quit) {
-		cout << "Enter a word to spell check or \"quit\" to exit: ";
-		cin >> inputbuffer;
-
-		if (inputbuffer.compare("quit") == 0)
-			quit = true;
-
-		else if (dictionary->mapContains(inputbuffer))
-			cout << "\n\"" << inputbuffer << "\"" << " is spelled correctly.\n" << endl;
-
-		else {
-			cout << "\nDid you mean: " << endl;
-			for (int i = 0; i < dictionary->mapCapacity(); i++) {
-				HashLink<string, int> *seeker = dictionary->mapTableLink(i);
-				while (seeker) {
-					string seekerKey = seeker->getKey();
-					/* result filters:
-                     * the length of the suggestion is at least the length of the misspelled word
-                     * the first letter of the misspelled word is correct
-                     * levenshtein distance between words is 1 or 2
-                     */
-					if (seekerKey.length() >= inputbuffer.length() && seekerKey[0] == inputbuffer[0]) {
-						// calculate edit distance between mispelled word and filtered words
-						int LD = calcLD(inputbuffer, seeker->getKey());
-                    	if ((LD == 1 || LD == 2)) 
-                    		cout << seekerKey << endl;
-                	}
-
-                	seeker = seeker->getNext();
-				}
-			}
-			cout << endl;
-		} 
-	}
+	// run spellChecker with loaded dictionary
+	spellChecker(dictionary);
 
 	delete dictionary;
 	return 0;
 }
 
-// function implementation
+/********** function implementation **********/
+/*	 
+* Loads the dictionary.txt file into the hash table
+* Returns 0 on success and -1 otherwise
+* @param dictionary file name (dictionary.txt) and ptr to hash map
+* @return int indicating whether load was successful
+*/
 int loadDictionary(string fname, HashMap<string, int> *map) {
 	string inputbuffer = "";
 	ifstream dictionaryFile(fname);
@@ -131,8 +105,8 @@ int calcLD(string word1, string word2) {
 				int deletion = matrix[i - 1][j] + 1;
 				int insert = matrix[i][j - 1] + 1;
 				int sub = matrix[i-1][j - 1] + 1;
+				
 				int min = deletion;
-
 				if (insert < min)
 					min = insert;
 
@@ -145,4 +119,47 @@ int calcLD(string word1, string word2) {
 	}
 
 	return matrix[word1Len][word2Len];
+}
+
+void spellChecker(HashMap<string, int> *dictionary) {
+	string inputbuffer = "";
+	bool quit = false;
+
+	while (!quit) {
+		cout << "Enter a word to spell check or \"quit\" to exit: ";
+		cin >> inputbuffer;
+
+		if (inputbuffer.compare("quit") == 0)
+			quit = true;
+
+		// spell check logic
+		// input word is spelled correctly if word is found in hash table
+		else if (dictionary->mapContains(inputbuffer))
+			cout << "\n\"" << inputbuffer << "\"" << " is spelled correctly.\n" << endl;
+
+		// print suggested words based on edit distance
+		else {
+			cout << "\nDid you mean: " << endl;
+			for (int i = 0; i < dictionary->mapCapacity(); i++) {
+				HashLink<string, int> *seeker = dictionary->mapTableLink(i);
+				while (seeker) {
+					string seekerKey = seeker->getKey();
+					/* result filters:
+                     * the length of the suggestion is at least the length of the misspelled word
+                     * the first letter of the misspelled word is correct
+                     * levenshtein distance between words is 1 or 2
+                     */
+					if (seekerKey.length() >= inputbuffer.length() && seekerKey[0] == inputbuffer[0]) {
+						// calculate edit distance between mispelled word and filtered words
+						int LD = calcLD(inputbuffer, seeker->getKey());
+                    	if ((LD == 1 || LD == 2)) 
+                    		cout << seekerKey << endl;
+                	}
+
+                	seeker = seeker->getNext();
+				}
+			}
+			cout << endl;
+		} 
+	}
 }
